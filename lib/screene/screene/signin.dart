@@ -1,3 +1,4 @@
+import 'package:coffee/screene/screene/resetpassword.dart';
 import 'package:coffee/screene/screene/signUp.dart';
 import 'package:flutter/material.dart';
 
@@ -5,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../services/auth_provider.dart';
 import '../../utilis/primary_button.dart';
+import '../home_page.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -50,23 +52,41 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.green.withOpacity(0.1),
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Form(
             key: _formKey, // Add this line
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset("assets/images/hom.jpg", height: 160),
-                SizedBox(height: 20),
+                Text(
+                  "مرحبًا بعودتك",
+                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                ),
+                Text("أدخل بيانات الاعتماد الخاصة بك لتسجيل الدخول"),
+                SizedBox(
+                  height: 30,
+                ),
                 TextFormField(
                   keyboardType: TextInputType.emailAddress,
                   controller: emailController,
                   focusNode: emailFocusNode,
                   decoration: InputDecoration(
                     labelText: "Email",
-                    prefixIcon: Icon(Icons.email),
+                    labelStyle: TextStyle(color: Color(0xFF04764E)),
+                    prefixIcon: Icon(
+                      Icons.email,
+                      color: Color(0xFF04764E),
+                    ),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: BorderSide.none),
+                    fillColor: Colors.green.withOpacity(0.1),
+                    filled: true,
                   ),
                 ),
                 SizedBox(height: 10),
@@ -77,7 +97,11 @@ class _SignInState extends State<SignIn> {
                   obscureText: isObscure,
                   decoration: InputDecoration(
                     labelText: "Password",
-                    prefixIcon: Icon(Icons.lock),
+                    labelStyle: TextStyle(color: Color(0xFF04764E)),
+                    prefixIcon: Icon(
+                      Icons.lock,
+                      color: Color(0xFF04764E),
+                    ),
                     suffixIcon: IconButton(
                       onPressed: () {
                         setState(() {
@@ -87,31 +111,42 @@ class _SignInState extends State<SignIn> {
                       icon: isObscure
                           ? Icon(Icons.visibility)
                           : Icon(Icons.visibility_off),
+                      color: Color(0xFF04764E),
                     ),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: BorderSide.none),
+                    fillColor: Colors.green.withOpacity(0.1),
+                    filled: true,
                   ),
                 ),
                 SizedBox(height: 20),
                 PrimaryButton(
-                  text: "Login",
-                  press: () async {
-                    final email = emailController.text.trim();
-                    final password = passwordController.text;
+                    text: "Login",
+                    press: () async {
+                      final email = emailController.text.trim();
+                      final password = passwordController.text;
 
-                    if (validateEmail(email) && validatePassword(password)) {
-                      _formKey.currentState!.save(); // Save the form
-                      print("is validate");
+                      if (validateEmail(email) && validatePassword(password)) {
+                        _formKey.currentState!.save(); // Save the form
+                        print("is validate");
 
-                      // Call the login function and obtain the token
-                      var login = await Provider.of<AuthProvider>(context,
-                              listen: false)
-                          .login(emailController.text, passwordController.text);
+                        // Call the login function and obtain the token
+                        var login = await Provider.of<AuthProvider>(context,
+                                listen: false)
+                            .login(
+                                emailController.text, passwordController.text);
 
-                      if (login) {
-                        // Set the obtained token
-
-                  
-                        
-                        print("login with success");
+                        if (login) {
+                          // Set the obtained token
+                          print("login with success");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomePage(),
+                            ),
+                          );
+                        }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text(Provider.of<AuthProvider>(context,
@@ -119,9 +154,7 @@ class _SignInState extends State<SignIn> {
                                 .message)));
                         print("login failed");
                       }
-                    }
-                  },
-                ),
+                    }),
                 SizedBox(height: 10),
                 PrimaryButton(
                   color: Theme.of(context).colorScheme.secondary,
@@ -133,6 +166,22 @@ class _SignInState extends State<SignIn> {
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: 40,
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ResetPasswordScreen()),
+                    );
+                  },
+                  child: const Text(
+                    "هل نسيت كلمة السر؟",
+                    style: TextStyle(color: Colors.purple),
+                  ),
+                )
               ],
             ),
           ),

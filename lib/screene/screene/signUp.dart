@@ -46,39 +46,40 @@ class _SignUPState extends State<SignUP> {
       String name = firstNameController.text;
       String email = emailController.text;
       String password = passwordController.text;
-      String telephone = telephoneController.text; // Add this
+      String telephone = telephoneController.text;
 
-      print(
-          'Registering user: $name, $email, $telephone'); // Add this line for debugging
+      print('Registering user: $name, $email, $telephone');
 
       try {
-        var success = await authProvider.register(name, email, password,
-            telephone); // Pass telephone here if your registration logic supports it
+        var success =
+            await authProvider.register(name, email, password, telephone);
 
         if (success) {
           // Registration was successful, navigate to the next screen
-          Navigator.pushReplacement(
+          print("register  with success");
+          Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const SignIn(),
+              builder: (context) => SignIn(),
             ),
           );
         } else {
-          // Registration failed, handle the error or show a message
-          // You can access the error message from authProvider.getMessage()
-          String errorMessage = authProvider.getMessage();
-          print(
-              'Registration failed: $errorMessage'); // Add this line for debugging
-          // Show the error message to the user
+          // Registration failed, show a message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(errorMessage),
+              content: Text('Registration failed. Please try again.'),
             ),
           );
         }
       } catch (e) {
         // Handle exceptions that might occur during registration
         print('Error during registration: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'An error occurred during registration. Please try again.'),
+          ),
+        );
       }
     }
   }
@@ -87,12 +88,18 @@ class _SignUPState extends State<SignUP> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Account'),
+        backgroundColor:  Colors.green.withOpacity(0.1),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: <Widget>[
+            Center(
+              child: Text(
+                "إنشاء حساب",
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              ),
+            ),
             const SizedBox(height: 20),
             Form(
               key: formKey,
@@ -113,6 +120,11 @@ class _SignUPState extends State<SignUP> {
                         Icons.person,
                         color: Color(0xFF04764E),
                       ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: BorderSide.none),
+                      fillColor: Colors.green.withOpacity(0.1),
+                      filled: true,
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -131,6 +143,11 @@ class _SignUPState extends State<SignUP> {
                         Icons.email,
                         color: Color(0xFF04764E),
                       ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: BorderSide.none),
+                      fillColor: Colors.green.withOpacity(0.1),
+                      filled: true,
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -153,6 +170,11 @@ class _SignUPState extends State<SignUP> {
                         Icons.phone,
                         color: Color(0xFF04764E),
                       ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: BorderSide.none),
+                      fillColor: Colors.green.withOpacity(0.1),
+                      filled: true,
                     ),
                   ), // Add this
                   const SizedBox(height: 15),
@@ -182,6 +204,11 @@ class _SignUPState extends State<SignUP> {
                             ? const Icon(Icons.visibility)
                             : const Icon(Icons.visibility_off),
                       ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: BorderSide.none),
+                      fillColor: Colors.green.withOpacity(0.1),
+                      filled: true,
                     ),
                   ),
                   const SizedBox(height: 15),

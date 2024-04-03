@@ -5,12 +5,12 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utilis/constants.dart';
-import 'api.dart';
+// import 'api.dart';
 
 class AuthService {
   final String baseUrl;
 
-  final Api _api = Api();
+  // final Api _api = Api();
   AuthService({required this.baseUrl});
 
   Future<http.Response> getUser() async {
@@ -52,33 +52,26 @@ class AuthService {
     return response;
   }
 
-  Future<http.Response> register(
+  Future<http.Response> registerUser(
       String name, String email, String password, String telephone) async {
-    try {
-      final api = Api(); // Create an instance of the Api class
-      final response = await api.httpPost('register', {
-        'name': name,
-        'email': email,
-        'password': password,
-        'telephone': telephone,
-      });
-      return response;
-    } catch (e) {
-      throw Exception('Registration failed: $e');
-    }
-  }
+    final url = Uri.parse('$baseUrl/api/register');
 
-  Future<bool> isUserAdmin() async {
-    try {
-      final response = await _api.authenticatedRequest('api/checkAdmin');
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      final bool isAdmin = data['is_admin'] ??
-          false; // Adjust the key according to your API response
-      return isAdmin;
-    } catch (e) {
-      print('Error checking admin status: $e');
-      return false;
-    }
+    final Map<String, dynamic> userData = {
+      'name': name,
+      'email': email,
+      'password': password,
+      'telephone': telephone,
+    };
+
+    final response = await http.post(
+      url,
+      body: jsonEncode(userData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    return response;
   }
 
   Future<void> logout() async {

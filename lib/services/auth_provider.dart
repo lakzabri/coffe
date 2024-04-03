@@ -127,19 +127,32 @@ class AuthProvider extends BaseProvider {
       // Make an API request to verify the user's credentials
       final response = await _authService.login(email, password);
 
-      var res = jsonDecode(response.body.toString());
-      print("this is $res");
-      print("this is it  ${res["token"]}");
+      // Check if the response is JSON
+      if (response.headers['content-type']?.startsWith('application/json') ??
+          false) {
+        var res = jsonDecode(response.body.toString());
+        print("this is $res");
+        print("this is it  ${res["token"]}");
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      // prefs.setString("token", res[0]["token"]);
-      prefs.setString("role", res["user"]["roles"]);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      if (response.statusCode == 200) {
-        // Successful authentication
-        return true;
+        // Check if 'user' key exists in the response and is not null
+        if (res["user"] != null) {
+          // Check if 'roles' key exists in 'user' and is not null
+          if (res["user"]["roles"] != null) {
+            prefs.setString("roles", res["user"]["roles"]);
+          }
+        }
+
+        if (response.statusCode == 200) {
+          // Successful authentication
+          return true;
+        } else {
+          // Authentication failed
+          return false;
+        }
       } else {
-        // Authentication failed
+        print('Response is not JSON. Actual response: ${response.body}');
         return false;
       }
     } catch (e) {
@@ -170,36 +183,27 @@ class AuthProvider extends BaseProvider {
         },
       );
 
-      if (response.statusCode == 200) {
+      // Print the status code and the response body
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
         // Registration was successful
         print('Registration successful');
-        print('Response Body: ${response.body}');
         return true; // Return true for a successful registration
-      } else if (response.statusCode == 302) {
-        // Handle redirection
-        final redirectionUrl = response.headers['location'];
-        print('Redirecting to: $redirectionUrl');
-        // Make another HTTP request to the redirection URL
-        // You may need to add additional logic here based on your server's requirements
-        return false; // Return false for redirection (you can handle it accordingly)
       } else {
         // Registration failed
-        print('Response Status Code: ${response.statusCode}');
-        print('Response Body: ${response.body}');
+        _errorMessage =
+            response.body; // Store the error message from the server
         return false; // Return false for a failed registration
       }
     } catch (e) {
       // Handle network errors or other exceptions
       print('Error during registration: $e');
-      return false; // Return false for any error
+      _errorMessage =
+          e.toString(); // Store the error message from the exception
+      return false;
     }
-  }
-
-  Future<bool> checkAdminStatus() async {
-    final isAdmin = await _authService.isUserAdmin();
-    _isAdmin = isAdmin;
-    notifyListeners();
-    return isAdmin;
   }
 
   Future<void> logout() async {
@@ -221,6 +225,36 @@ class AuthProvider extends BaseProvider {
       return users;
     } catch (e) {
       throw Exception('Error searching for users: $e');
+    }
+  }
+
+  Future<bool> resetPassword(
+      String email, String password, String passwordConfirmation) async {
+    final url = Uri.parse('$Url/api/resetPassword');
+
+    try {
+      final response = await http.post(
+        url,
+        body: {
+          'email': email,
+          'password': password,
+          'password_confirmation': passwordConfirmation,
+        },
+      );
+
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Password reset successful');
+        return true;
+      } else {
+        print('User not found');
+        return false;
+      }
+    } catch (e) {
+      print('Error during password reset: $e');
+      return false;
     }
   }
 }

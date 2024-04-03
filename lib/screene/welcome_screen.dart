@@ -1,7 +1,7 @@
 import 'package:coffee/screene/screene/signin.dart';
 import 'package:flutter/material.dart';
 
-import 'home_page.dart';
+import '../utilsYOUN/Navigation_Bar.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -74,7 +74,7 @@ class WelcomeScreen extends StatelessWidget {
                               builder: (context) => const SignIn()),
                         );
                       },
-                      child: const Text("تسجيل الدخول"),
+                      child: const Text("تسجيل الدخول" ),
                       style: TextButton.styleFrom(
                         minimumSize: Size(88, 36),
                         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -95,7 +95,8 @@ class WelcomeScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
+                          MaterialPageRoute(
+                              builder: (context) => Navigation_Bar()),
                         );
                       },
                       child: const Text('اشتراك'),
